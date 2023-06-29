@@ -6,84 +6,105 @@ let valor = 0;
 let juegoplayer = "P1";
 let cuadrado2 = document.getElementsByClassName("cuadrado");
 let btn_reinicio = document.getElementById("reiniciar");
-
+let px = document.getElementById("x");
+let pO = document.getElementById("O");
 
 cuadrados.forEach((cuadrado) => {
   cuadrado.addEventListener("click", () => {
     if (juegoplayer === "ya termino el juego") return;
     if (cuadrado.textContent !== "") return;
     cuadrado.textContent = x;
-    if (Empatar()) {
-      alert("empate");
-    }
-    const lista_filtrada = cuadrados.filter(prueba);
-    let Ia = Math.floor(Math.random() * lista_filtrada.length);
-    lista_filtrada[Ia].textContent = o;
+    let findeJuego = ValidarGanador("x");
+    console.log("findeJuego", findeJuego);
+    if (!findeJuego) {
+      const lista_filtrada = cuadrados.filter(filtro);
+      let Ia = Math.floor(Math.random() * lista_filtrada.length);
 
-    //funcion para cuando empata
-    const Quienganó = ganador();
-    if (typeof Quienganó === "object") {
-      puntos(Quienganó);
+      px.style.display = "none";
+      pO.style.display = "block";
+      setTimeout(() => {
+        lista_filtrada[Ia].textContent = o;
+        ValidarGanador("O");
+        px.style.display = "block";
+        pO.style.display = "none";
+      }, 500);
+    } else {
       return;
-    }
-
-    console.log(Quienganó);
-    if (Quienganó === Empatar) {
-      console.log("Empatar");
-      alert("Empatar");
-    }
-
-    function prueba(cuadrados) {
-      if (cuadrados.textContent == "") {
-        return true;
-      } else {
-        return false;
-      }
     }
   });
 });
+
+function filtro(cuadrado) {
+  return cuadrado.textContent == "";
+}
+
+function ValidarGanador(jugador) {
+  const Quienganó = ganador();
+  //console.log("que imprime", Quienganó);
+
+  if (Array.isArray(Quienganó)) {
+    puntos(jugador, Quienganó);
+    juegoplayer = "ya termino el juego";
+  }
+
+  if (Quienganó === "Empate") {
+    console.log("Empate");
+    alert("Empate");
+  }
+  return Array.isArray(Quienganó) || Quienganó === "Empate";
+}
+
 //funcion ganador
 //revisar si ya alguien gano
 function ganador() {
   let tablero = Array.from(cuadrados).map((cuadrado) => cuadrado.textContent);
-  console.log(tablero);
+  let arrayGanador = [];
 
-  //ganar en horizontal
+  // Ganar en horizontal
   for (let i = 0; i < 9; i += 3) {
     if (
       tablero[i] &&
       tablero[i] === tablero[i + 1] &&
       tablero[i] === tablero[i + 2]
     ) {
-      return [i, +i + 1, i + 2];
+      arrayGanador = [i, i + 1, i + 2];
     }
   }
 
-  //ganar en vertical
+  // Ganar en vertical
   for (let i = 0; i < 3; i++) {
     if (
       tablero[i] &&
       tablero[i] === tablero[i + 3] &&
       tablero[i] === tablero[i + 6]
     ) {
-      return [i, +i + 3, i + 6];
+      arrayGanador = [i, i + 3, i + 6];
     }
   }
-  //ganar en transversales
+
+  // Ganar en diagonales
   if (tablero[0] && tablero[0] === tablero[4] && tablero[0] === tablero[8]) {
-    return ([0, 4, 8]);
+    arrayGanador = [0, 4, 8];
   }
   if (tablero[2] && tablero[2] === tablero[4] && tablero[2] === tablero[6]) {
-    return [2, 4, 6];
+    arrayGanador = [2, 4, 6];
   }
-
-  if (tablero.includes("")) return false;
-
-  return "empate";
+  console.log(tablero);
+  if (arrayGanador.length > 0) {
+    return arrayGanador;
+  } else if (!tablero.includes("")) {
+    return "Empate";
+  } else {
+    return false;
+  }
 }
 
-function puntos(Quienganó) {
-  console.log("Ganó", Quienganó);
+function puntos(jugador, Quienganó) {
+  console.log("Gano", jugador, Quienganó);
+  setTimeout(() => {
+    alert(`Ganaron las ${jugador}`);
+  }, 200);
+
   juegoplayer = "ya termino el juego";
   Quienganó.forEach((posicion) => {
     cuadrados[posicion].classList.toggle("Ganó", true);
@@ -105,27 +126,3 @@ btn_reinicio.addEventListener("click", reinicio);
 function reinicio() {
   window.location.reload();
 }
-
-//funcion modal
-
-
-
-// var modal = document.getElementById("myModal");
-
-// var btn = document.getElementById("myBtn");
-
-// var span = document.getElementsByClassName("close")[0];
-
-// window.onload = function() {
-//   modal.style.display = "block";
-// }
-
-// span.onclick = function() {
-//   modal.style.display = "none";
-// }
-
-// window.onclick = function(event) {
-//   if (event.target == modal) {
-//     modal.style.display = "none";
-//   }
-// }
