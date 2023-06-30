@@ -1,19 +1,28 @@
 //variables del juego
 let cuadrados = Array.from(document.querySelectorAll(".cuadrado"));
-let x = "x";
+let x = "X";
 let o = "O";
 let valor = 0;
 let juegoplayer = "P1";
 let cuadrado2 = document.getElementsByClassName("cuadrado");
 let btn_reinicio = document.getElementById("reiniciar");
+
+let nombre = document.getElementById("nombre")
 let px = document.getElementById("x");
 let pO = document.getElementById("O");
+let camb = document.getElementById("cambio");
+let finJ = document.getElementById("finJ")
 
 cuadrados.forEach((cuadrado) => {
+  camb.innerHTML="TURNO DEL JUGADOR"
   cuadrado.addEventListener("click", () => {
     if (juegoplayer === "ya termino el juego") return;
+   
     if (cuadrado.textContent !== "") return;
+    
     cuadrado.textContent = x;
+
+    camb.innerHTML="TURNO DE LA COMPUTADORA"
     let findeJuego = ValidarGanador("x");
     console.log("findeJuego", findeJuego);
     if (!findeJuego) {
@@ -24,10 +33,11 @@ cuadrados.forEach((cuadrado) => {
       pO.style.display = "block";
       setTimeout(() => {
         lista_filtrada[Ia].textContent = o;
+        camb.innerHTML="TURNO DEL JUGADOR"
         ValidarGanador("O");
         px.style.display = "block";
         pO.style.display = "none";
-      }, 500);
+      }, 1000);
     } else {
       return;
     }
@@ -95,6 +105,7 @@ function ganador() {
   } else if (!tablero.includes("")) {
     return "Empate";
   } else {
+   
     return false;
   }
 }
@@ -102,10 +113,15 @@ function ganador() {
 function puntos(jugador, Quienganó) {
   console.log("Gano", jugador, Quienganó);
   setTimeout(() => {
-    alert(`Ganaron las ${jugador}`);
+
+   
+   nombre.innerHTML=`GANÓ ${jugador}`
   }, 200);
 
   juegoplayer = "ya termino el juego";
+
+  finJ.style.display="block"
+  finJ.innerHTML="GAME OVER"
   Quienganó.forEach((posicion) => {
     cuadrados[posicion].classList.toggle("Ganó", true);
   });
